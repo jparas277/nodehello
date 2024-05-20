@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: helm-deployment
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  project: default
+  source:
+    helm:
+      valueFiles:
+        - values.yaml
+    repoURL: https://github.com/jparas277/nodehello
+    path: nodehello
+    targetRevision: main  # or whatever branch/tag/commit you want to deploy
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

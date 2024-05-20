@@ -1,0 +1,33 @@
+# Stage 1: Build
+FROM node:latest AS build
+
+WORKDIR /app
+
+COPY package.json .
+COPY package-lock.json .
+
+# Install dependencies
+RUN npm install --only=production
+
+# Copy application source code
+COPY . .
+
+# Stage 2: Production
+FROM node:alpine AS production
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY --from=build /app/package*.json ./
+
+# Install only production dependencies
+RUN npm install --only=production
+
+# Copy built files
+COPY --from=build /app/index.js ./
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Command to run the application
+CMD ["node", "index.js"]
